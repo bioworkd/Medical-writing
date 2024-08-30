@@ -1,0 +1,45 @@
+##########################################
+### DELETE DUPLICATED ARTICLES SCRIPT ###
+#########################################
+
+# INSTALL AND LOAD THE NECESSARY LIBRARIES
+library(readxl)
+library(dplyr)
+install.packages("writexl")
+library(writexl)
+install.packages("openxlsx")
+library(openxlsx)
+
+
+#CHOOSE THE FILE WE ARE GOING TO WORK WITH, IT POPS UP A WINDOW, SELECT FILE AND IN THE CONSOLE IT  APPEARS THE FILE PATH
+file.choose()
+
+#CREATE AND OBJECT USING THE FILE PATH YOU COPIED
+
+ruta_excel <- ""
+
+#THE FUNCTION "read_excel()" READS THE EXCEL INTO RSTUDIO FROM THE "ruta_excel" AND IT STORES IT IN THE "datos" NEW OBJECT
+datos <- read_excel(ruta_excel)
+
+#FROM "datos" WE FILTER AND DELETE DUPLICATED USING THE DISTINCT() FUNCTION IN "datos" AND CREATE A NEW OBJECT "datos_cured"
+datos_cured <- datos %>% distinct(Title, Authors, .keep_all = TRUE)
+
+# IDENTIFY DUPLICATED FROM "data" AND STORED IT IN A NEW OBJECT "datos_deleted"
+datos_deleted <- datos %>% filter(duplicated(Title, Authors))
+
+#CRETAE A NEW EXCEL WORK BOOK USING THE FUNCTION "createWorkbook()" 
+wb <- createWorkbook()
+
+#ADD A SHEET FOR UNIQUE VALUES USING THE FUNCTION "addWorksheet()" AND WITH FUNCTION #"WriteData()" ADD THE DATA FROM 
+#"datos_cured" TO THE NEW SHEET
+
+addWorksheet(wb, "cured")
+writeData(wb, "cured", datos_cured)
+
+#ADD OTHER SHEET FOR THE DUPLICATED DATA
+addWorksheet(wb, "deleted")
+writeData(wb, "deleted", datos_deleted)
+
+#GIVE A NAME " TO THE NEWLY CREATED EXCEL WORK BOOK AND  INPUT THE FILE PATH WHERE YOU WANT TO SAVE IT 
+ruta_excel_final <- "You could use any rute but it has to en in .xlsx"
+saveWorkbook(wb, ruta_excel_final)
