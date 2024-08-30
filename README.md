@@ -1,4 +1,4 @@
-his R script is designed to remove duplicated articles from an Excel file and then save the results in a new Excel workbook with two sheets: one containing the unique articles and another with the duplicated articles. Below is a step-by-step brief description:
+This R script is designed to remove duplicated articles from an Excel file and then save the results in a new Excel workbook with two sheets: one containing the unique articles and another with the duplicated articles. Below is a step-by-step brief description:
 
 Installing and loading necessary libraries: The script installs and loads the libraries readxl, dplyr, writexl, and openxlsx, which are essential for reading, manipulating, and writing Excel files in R.
 
