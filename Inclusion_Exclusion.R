@@ -32,36 +32,31 @@ data_excl <- read_excel(rute_excl, sheet = "cured")
 
 # 5. Filter the data based on specific criteria
 # Here, you filter the data using specific keywords in the "Abstract" column. The `filter()` function from `dplyr` is used to keep rows that match the given criteria.
-# - `grepl()` searches for patterns in the text (case-insensitive due to `ignore.case = TRUE`).
-# - `filter_1`, `filter_2`, `filter_3`, and `filter_4` store subsets of data that match different sets of keywords.
-# - `filter_total` combines all these criteria, keeping rows that match any of the keywords.
 
 filter_1 <- data_excl %>% filter(grepl("translational research|Translational science|Bench-to-bedside research", Abstract, ignore.case = TRUE))
 filter_2 <- data_excl %>% filter(grepl("Drug development|pharmaceutical development|therapies in breast cancer", Abstract, ignore.case = TRUE))
 filter_3 <- data_excl %>% filter(grepl("PPIE|User involvement|community cancer", Abstract, ignore.case = TRUE))
-filter_4 <- data_excl %>% filter(grepl("breast cancer", Abstract, ignore.case = TRUE))
+filter_4 <- data_excl %>% filter(grepl("review", Abstract, ignore.case = TRUE))
 
-# `filter_total` will contain all rows that match any of the above filters (i.e., it's an OR condition between all filters).
-filter_total <- data_excl %>% filter(grepl("translational research|Translational science|Bench-to-bedside research", Abstract, ignore.case = TRUE) |
-                                       grepl("Drug development|pharmaceutical development|therapies in breast cancer", Abstract, ignore.case = TRUE) |
-                                       grepl("PPIE|User involvement|community cancer", Abstract, ignore.case = TRUE) |
-                                       grepl("breast cancer", Abstract, ignore.case = TRUE))
+# 6. Define the combined search patterns using the "|" operator
+# This pattern combines multiple keywords into one search string.
+patterns <- "genetic risk assessment|questionnaire|breast cancer|awareness|attitudes|perceptions"
 
-# 6. Identify data that does not meet the criteria (i.e., excluded data)
-# This step filters out rows that do not match any of the criteria.
+# 7. Apply the filter using `grepl()` with the combined pattern
+# `total_filter` will contain all rows that match any of the keywords in the combined pattern.
+total_filter <- data_excl %>% filter(grepl(patterns, Abstract, ignore.case = TRUE))
+
+# 8. Identify data that does not meet the criteria (i.e., excluded data)
+# This step filters out rows that do not match the combined criteria.
 # The `!grepl()` negates the condition, so you're filtering for rows that do NOT contain the specified keywords.
+excluded_data <- data_excl %>% filter(!grepl(patterns, Abstract, ignore.case = TRUE))
 
-deleted_D <- data_excl %>% filter(!grepl("translational research|Translational science|Bench-to-bedside research", Abstract, ignore.case = TRUE),
-                                  !grepl("Drug development|pharmaceutical development|therapies in breast cancer", Abstract, ignore.case = TRUE),
-                                  !grepl("PPIE|User involvement|community cancer", Abstract, ignore.case = TRUE),
-                                  !grepl("breast cancer", Abstract, ignore.case = TRUE))
-
-# 7. Create a new Excel workbook
+# 9. Create a new Excel workbook
 # The `createWorkbook()` function from `openxlsx` creates a new, empty workbook where you can add worksheets.
 
 wb <- createWorkbook()
 
-# 8. Add worksheets and write data to the workbook
+# 10. Add worksheets and write data to the workbook
 # `addWorksheet()` creates a new sheet in the workbook, and `writeData()` writes the filtered data into the respective sheet.
 
 addWorksheet(wb, "Filter1")
@@ -77,14 +72,14 @@ addWorksheet(wb, "Filter4")
 writeData(wb, "Filter4", filter_4)
 
 addWorksheet(wb, "Total Filter")
-writeData(wb, "Total Filter", filter_total)
+writeData(wb, "Total Filter", total_filter)
 
 addWorksheet(wb, "Excluded")
-writeData(wb, "Excluded", deleted_D)
+writeData(wb, "Excluded", excluded_data)
 
-# 9. Save the workbook to a new Excel file
+# 11. Save the workbook to a new Excel file
 # Finally, you specify the path where you want to save the Excel file that contains the filtered results.
 # `saveWorkbook()` saves the workbook at the specified path.
 
-rute_results <- ""  # You should specify the path where you want to save the results, e.g., "path/to/save/results.xlsx"
+rute_results <- "C:\\Users\\Usuario\\Documents\\.xlsx"  # Specify the path where you want to save the results, e.g., "path/to/save/results.xlsx"
 saveWorkbook(wb, rute_results)
